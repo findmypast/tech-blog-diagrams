@@ -1,7 +1,15 @@
 @startuml
+
 start
-:Hello world;
-:This is on defined on
-several **lines**;
+
+:Teamcity invokes webhook;
+:Gather build stats from Teamcity;
+
+while (Metric plugin available?) is (yes)
+  :Run metric plugin;
+  :Send metric to Graphite;
+endwhile
+
 stop
+
 @enduml

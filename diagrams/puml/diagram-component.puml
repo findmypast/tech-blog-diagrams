@@ -1,15 +1,45 @@
 @startuml
 
-interface "Data Access" as DA
+[Trello API] as trello
+[Teamcity API]
+[Squirrel API] as squirrel
+[Triority] as triority
+[Grafana]
 
-DA - [First Component]
-[First Component] ..> HTTP : use
+database {
+  [Graphite] as db
+}
 
-note left of HTTP : Web Service only
+[Teamcity API] --> squirrel
+squirrel --> [Teamcity API]
+squirrel --> db
 
-note right of [First Component]
-  A note can also
-  be on several lines
+note left of squirrel
+Teamcity invokes a webhook
+on completed builds then
+we query for more
+information about build
+and send to Graphite
+end note
+
+
+triority --> trello
+triority --> db
+
+note left of triority
+Monitors tracks the amount
+of time cards spend in
+and out of a P1 Resolved to
+build metrics that are send to
+Graphite
+end note
+
+
+[Grafana] -up-> db
+
+note left of Grafana
+Queries Graphite and
+visualises metrics
 end note
 
 @enduml

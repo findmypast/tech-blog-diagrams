@@ -1,14 +1,25 @@
 @startuml
-actor Bob #red
-' The only difference between actor
-'and participant is the drawing
-participant Alice
-participant "I have a really\nlong name" as L #99FF99
-/' You can also declare:
-   participant L as "I have a really\nlong name"  #99FF99
-  '/
 
-Alice->Bob: Authentication Request
-Bob->Alice: Authentication Response
-Bob->L: Log transaction
+title Integration testing flow
+
+actor "Test Agent" as tester
+participant "Mountebank (Mocked Teamcity API)" as mock
+participant "Squirrel API" as api
+database Graphite as db
+
+group Arrange
+  tester -> mock   : Sets up test data and responses
+end
+group Act
+  tester -> api    : Initiate test - mimic teamcity and invokes webhook
+  api -> mock      : Queries  build data
+  mock -> api      : Sends build data
+  api -> db        : Stores time series data \n in graphite
+end
+group Assert
+  tester -> db     : Queries db
+  db -> tester     : Returns queried data
+  tester -> tester : Verifies data
+end
+
 @enduml
